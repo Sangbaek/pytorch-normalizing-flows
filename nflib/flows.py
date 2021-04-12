@@ -132,7 +132,7 @@ class NormalizingFlow(nn.Module):
 
     def backward(self, z):
         m, _ = z.shape
-        log_det = torch.zeros(m)
+        log_det = torch.zeros(m, device = self.device)
         xs = [z]
         for flow in self.flows[::-1]:
             z, ld = flow.backward(z)
