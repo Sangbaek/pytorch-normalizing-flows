@@ -18,6 +18,27 @@ import numpy as np
 import torch
 from torch import nn
 
+# define shifts
+class MLP(nn.Module):
+    """ a simple 4-layer MLP (Multilayer perceptron)"""
+
+    def __init__(self, nin, nout, nh):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(nin, nh),
+            nn.LeakyReLU(0.2),
+            nn.Linear(nh, nh),
+            nn.LeakyReLU(0.2),
+            nn.Linear(nh, nh),
+            nn.LeakyReLU(0.2),
+            nn.Linear(nh, nout),
+        )
+    def forward(self, x):
+        return self.net(x)
+
+# ------------------------------------------------------------------------
+# flows
+
 class AffineConstantFlow(nn.Module):
     """ 
     Scales + Shifts the flow by (learned) constants per dimension.
@@ -88,23 +109,6 @@ class AffineHalfFlow(nn.Module):
         x = torch.cat([x0, x1], dim=1)
         log_det = torch.sum(-s, dim=1)
         return x, log_det
-
-class MLP(nn.Module):
-    """ a simple 4-layer MLP (Multilayer perceptron)"""
-
-    def __init__(self, nin, nout, nh):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(nin, nh),
-            nn.LeakyReLU(0.2),
-            nn.Linear(nh, nh),
-            nn.LeakyReLU(0.2),
-            nn.Linear(nh, nh),
-            nn.LeakyReLU(0.2),
-            nn.Linear(nh, nout),
-        )
-    def forward(self, x):
-        return self.net(x)
 
 # ------------------------------------------------------------------------
 
