@@ -115,13 +115,14 @@ class AffineHalfFlow(nn.Module):
 class NormalizingFlow(nn.Module):
     """ A sequence of Normalizing Flows is a Normalizing Flow """
 
-    def __init__(self, flows):
+    def __init__(self, flows, device = 'cpu'):
         super().__init__()
         self.flows = nn.ModuleList(flows)
+        self.device = device
 
     def forward(self, x):
         m, _ = x.shape
-        log_det = torch.zeros(m)
+        log_det = torch.zeros(m, device = self.device)
         zs = [x]
         for flow in self.flows:
             x, ld = flow.forward(x)
@@ -142,10 +143,11 @@ class NormalizingFlow(nn.Module):
 class NormalizingFlowModel(nn.Module):
     """ A Normalizing Flow Model is a (prior, flow) pair """
     
-    def __init__(self, prior, flows):
+    def __init__(self, prior, flows, device = 'cpu'):
         super().__init__()
+        self.device = device
         self.prior = prior
-        self.flow = NormalizingFlow(flows)
+        self.flow = NormalizingFlow(flows, device = self.device)
     
     def forward(self, x):
         zs, log_det = self.flow.forward(x)
