@@ -9,7 +9,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-%matplotlib inline
+#datetime lib for debug
 from datetime import datetime
 
 #Pytorch imports
@@ -27,11 +27,6 @@ from nflib.flows import (
     AffineConstantFlow, AffineHalfFlow, MLP, 
     NormalizingFlow, NormalizingFlowModel,
 )
-
-# for auto-reloading external modules
-# see http://stackoverflow.com/questions/1907993/autoreload-of-modules-in-ipython
-%load_ext autoreload
-%autoreload 2
 
 #Create data class
 class dataXZ:
