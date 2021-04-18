@@ -78,16 +78,16 @@ class AffineHalfFlow(nn.Module):
         self.s_cond = lambda x: x.new_zeros(x.size(0), self.dim // 2)
         self.t_cond = lambda x: x.new_zeros(x.size(0), self.dim // 2)
         if scale:
-            self.s_cond = net_class(self.dim // 2, self.dim // 2, nh)
+            self.s_cond = net_class((self.dim + self.parity) // 2, (self.dim + self.parity) // 2, nh)
         if shift:
-            self.t_cond = net_class(self.dim // 2, self.dim // 2, nh)
+            self.t_cond = net_class((self.dim + self.parity) // 2, (self.dim + self.parity) // 2, nh)
         
     def forward(self, x):
         x0, x1 = x[:,::2], x[:,1::2]
         if self.parity:
             x0, x1 = x1, x0
-        s = self.s_cond(x0)
-        t = self.t_cond(x0)
+        s = self.s_cond(x1)
+        t = self.t_cond(x1)
         z0 = x0 # untouched half
         z1 = torch.exp(s) * x1 + t # transform this half as a function of the other
         if self.parity:
@@ -100,8 +100,8 @@ class AffineHalfFlow(nn.Module):
         z0, z1 = z[:,::2], z[:,1::2]
         if self.parity:
             z0, z1 = z1, z0
-        s = self.s_cond(z0)
-        t = self.t_cond(z0)
+        s = self.s_cond(z1)
+        t = self.t_cond(z1)
         x0 = z0 # this was the same
         x1 = (z1 - t) * torch.exp(-s) # reverse the transform on this half
         if self.parity:
